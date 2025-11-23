@@ -1,14 +1,15 @@
 use dep::std;
 
-fn main(
-    solution: [u8; 625]
-) -> pub Field {
+fn main(solution: [u8; 625], expected_commitment: pub Field) {
     // 1. Verify full 25x25 Sudoku constraints
     verify_sudoku(solution);
 
-    // 2. Compute and return cryptographic commitment as public output
-    let commitment = compute_board_commitment(solution);
-    commitment
+    // 2. Compute commitment from solution
+    let actual_commitment = compute_board_commitment(solution);
+
+    // 3. CRITICAL: Assert that computed commitment matches expected commitment
+    // This ensures the verifier checks the commitment as a public input
+    assert(actual_commitment == expected_commitment);
 }
 
 fn compute_board_commitment(grid: [u8; 625]) -> Field {

@@ -4,15 +4,17 @@ const fs = require("fs");
 async function main() {
   console.log("Starting deployment process...");
 
-  // 1. Deploy UltraVerifier (Verifier.sol)
-  console.log("Deploying UltraVerifier...");
-  const Verifier = await hre.ethers.getContractFactory("Verifier");
-  const verifier = await Verifier.deploy();
+  // 1. Deploy UltraVerifier // Deploy Groth16Verifier
+  console.log("Deploying Groth16Verifier...");
+  const Groth16Verifier = await hre.ethers.getContractFactory(
+    "Groth16Verifier"
+  );
+  const verifier = await Groth16Verifier.deploy();
   await verifier.waitForDeployment();
   const verifierAddress = await verifier.getAddress();
-  console.log(`UltraVerifier deployed to: ${verifierAddress}`);
+  console.log(`Groth16Verifier deployed to: ${verifierAddress}`);
 
-  // 2. Deploy SudokuVerifier
+  // Deploy SudokuVerifier
   console.log("Deploying SudokuVerifier...");
   const SudokuVerifier = await hre.ethers.getContractFactory("SudokuVerifier");
   const sudokuVerifier = await SudokuVerifier.deploy(verifierAddress);
@@ -22,9 +24,9 @@ async function main() {
 
   // Save deployment info
   const deploymentInfo = {
-    network: hre.network.name,
+    verifier: verifierAddress,
     sudokuVerifier: sudokuVerifierAddress,
-    ultraVerifier: verifierAddress,
+    network: network.name,
     timestamp: new Date().toISOString(),
   };
 

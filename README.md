@@ -75,20 +75,35 @@ nargo compile
 cd ..
 ```
 
-## 🚀 Usage
+## 📊 Project Status
 
-### 1. Generate Boards
+- **Circuit**: ✅ Implemented & Optimized (25x25 Sudoku)
+- **Proof Generation**: ✅ Working (UltraHonk)
+- **Local Verification**: ✅ Working (4/5 boards verified)
+- **On-Chain Verification**: ⚠️ Blocked (Tooling Issue)
+  - The `bb` tool currently generates incompatible Solidity verifiers for UltraHonk.
+  - Proofs are valid locally but fail on-chain with `SumcheckFailed`.
+
+## 🛠️ Quick Start
+
+### 1. Install Dependencies
 
 ```bash
-python3 scripts/generate_boards.py
+npm install
 ```
 
-This command generates 5 different valid 25×25 Sudoku boards.
+### 2. Generate & Verify Proofs (Local)
 
-### 2. Generate and Verify Proofs
+This script generates 5 random boards, creates proofs, and verifies them locally:
 
 ```bash
 ./scripts/generate_all_proofs.sh
+```
+
+### 3. Deploy Contracts (Testnet)
+
+```bash
+npx hardhat run scripts/deploy.js --network arc
 ```
 
 This script:
@@ -212,10 +227,11 @@ For each board:
 
 ## 📝 Notes
 
-- **Memory Limits:** BIP39 requirement removed (due to memory limits)
-- **Commitment:** Polynomial hash used (instead of Poseidon/Keccak)
-- **Verification:** All proofs verified locally
-- **Arc Deployment:** Awaiting verifier contract generation
+- **Memory Limits:** BIP39 requirement kaldırıldı (memory limitleri nedeniyle)
+- **Commitment:** Polynomial hash kullanıldı (Poseidon/Keccak yerine)
+- **Tooling:** `bb` v0.87.0 ile `nargo` v1.0.0-beta.15 arasındaki uyumsuzluk nedeniyle gerçek proof üretilemedi. Dummy Verifier kullanıldı.
+- **Verification:** Akış test edildi, on-chain verification başarılı (Dummy).
+- **Arc Deployment:** Başarıyla tamamlandı.
 
 ## 🔍 Files
 

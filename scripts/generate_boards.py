@@ -2,6 +2,7 @@ import random
 import json
 import hashlib
 
+
 def generate_sudoku_25x25():
     """Generate a valid 25x25 Sudoku using pattern-based construction"""
     n = 5
@@ -15,6 +16,7 @@ def generate_sudoku_25x25():
             board[r][c] = val
 
     return board
+
 
 def shuffle_board(board):
     """Shuffle the board while maintaining Sudoku validity"""
@@ -64,6 +66,7 @@ def shuffle_board(board):
 
     return new_board
 
+
 def verify_sudoku(board):
     """Verify that the board is a valid 25x25 Sudoku"""
     size = 25
@@ -92,15 +95,28 @@ def verify_sudoku(board):
 
     return True
 
-def compute_commitment_python(board):
+
+def compute_commitment_field(board):
     """
-    Compute a simple commitment for testing.
-    Note: This won't match Noir's Poseidon hash exactly,
-    but we'll compute the real commitment in the circuit.
+    Compute the commitment using the same polynomial hash as the circuit.
+    Field modulus: 21888242871839275222246405745257275088548364400416034343698204186575808495617
     """
+    MODULUS = (
+        21888242871839275222246405745257275088548364400416034343698204186575808495617
+    )
     flat = [cell for row in board for cell in row]
-    data = bytes(flat)
-    return hashlib.sha256(data).hexdigest()
+
+    commitment = 0
+    base = 257
+    power = 1
+
+    for val in flat:
+        term = (val * power) % MODULUS
+        commitment = (commitment + term) % MODULUS
+        power = (power * base) % MODULUS
+
+    return f"0x{commitment:x}"
+
 
 def main():
     print("Generating 5 different valid 25x25 Sudoku boards...")
@@ -116,31 +132,48 @@ def main():
             print(f"✓ Board {i+1} is valid!")
             boards.append(board)
 
-            # Compute commitment (for reference)
-            commitment = compute_commitment_python(board)
-            print(f"  Python commitment (SHA256): {commitment[:16]}...")
+            # Compute commitment
+            commitment = compute_commitment_field(board)
+            print(f"  Field commitment: {commitment}")
         else:
             print(f"✗ Board {i+1} is INVALID!")
             return
 
     # Save all boards
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Saving boards to files...")
 
     for i, board in enumerate(boards):
         # Flatten board
         flat_board = [cell for row in board for cell in row]
 
+        # Compute commitment again for safety
+        commitment = compute_commitment_field(board)
+
         # Create Prover.toml content
-        prover_content = f'solution = {json.dumps(flat_board)}\n'
-        prover_content += f'commitment = "0"\n'  # Will be computed by circuit
+        prover_content = f"solution = {json.dumps(flat_board)}\n"
+        prover_content += f'expected_commitment = "{commitment}"\n'
 
         # Save to file
         filename = f"circuits/Prover_{i+1}.toml"
         with open(filename, "w") as f:
             f.write(prover_content)
-
         print(f"✓ Saved {filename}")
+
+        # Save Circom input.json (for the first board, or all)
+        circom_input = {
+            "solution": [int(x) for x in flat_board],
+            "expectedCommitment": str(commitment)
+        }
+        circom_filename = f"circom_circuits/input_{i+1}.json"
+        with open(circom_filename, "w") as f:
+            json.dump(circom_input, f, indent=2)
+        print(f"✓ Saved {circom_filename}")
+
+        # Also save the first one as standard input.json for convenience
+        if i == 0:
+            with open("circom_circuits/input.json", "w") as f:
+                json.dump(circom_input, f, indent=2)
 
         # Also save human-readable version
         readable_file = f"boards/board_{i+1}.txt"
@@ -151,7 +184,7 @@ def main():
                 f.write(" ".join(f"{cell:2d}" for cell in row) + "\n")
         print(f"✓ Saved {readable_file}")
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("✓ All 5 boards generated successfully!")
     print("\nNext steps:")
     print("1. Copy Prover_1.toml to circuits/Prover.toml")
@@ -159,7 +192,9 @@ def main():
     print("3. Generate proof with bb.js")
     print("4. Repeat for all 5 boards")
 
+
 if __name__ == "__main__":
     import os
+
     os.makedirs("boards", exist_ok=True)
     main()

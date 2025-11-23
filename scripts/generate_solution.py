@@ -11,15 +11,6 @@ mnemo = Mnemonic("english")
 wordlist = mnemo.wordlist
 word_to_index = {w: i for i, w in enumerate(wordlist)}
 
-# We need a mapping from Sudoku Symbols (1..25) to BIP39 Words.
-# We will just pick 25 random words to start.
-# But wait, to make the "intersection" strategy work, we need the set of 25 words
-# to effectively cover the "valid completions" space.
-# Actually, we can't change the mapping dynamically during backtracking easily.
-# So we fix the mapping first.
-# If we fix the mapping, we might get stuck.
-# But let's try.
-
 
 def get_valid_completions(prefix_words, target_len):
     # Returns a set of words (strings) that complete the prefix to a valid mnemonic

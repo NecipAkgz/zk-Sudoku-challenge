@@ -1,12 +1,20 @@
 #!/bin/bash
 
-# Script to generate proofs for all 5 boards
+# Script to generate proofs for all 5 boards using native bb
 
 echo "=========================================="
-echo "Generating proofs for all 5 boards"
+echo "Generating proofs for all 5 boards (Native bb)"
 echo "=========================================="
+
+# Ensure bb is in path
+source ~/.zshrc
 
 cd circuits
+
+# Clean previous build to ensure consistency
+echo "Cleaning previous build..."
+rm -rf target
+nargo compile
 
 for i in {1..5}; do
     echo ""
@@ -27,16 +35,22 @@ for i in {1..5}; do
 
     # Generate proof
     echo "Generating proof..."
-    ../node_modules/.bin/bb.js prove -b ./target/circuits.json -w ./target/witness.gz -o ./target/proof_$i
+    bb prove -b ./target/circuits.json -w ./target/witness.gz -o ./target/proof_$i
 
     if [ $? -ne 0 ]; then
         echo "❌ Failed to generate proof for board $i"
         continue
     fi
 
-    # Verify proof
-    echo "Verifying proof..."
-    ../node_modules/.bin/bb.js verify -k ./target/vk -p ./target/proof_$i
+    # Generate VK (only needed once)
+    if [ $i -eq 1 ]; then
+        echo "Generating Verification Key..."
+        bb write_vk -b ./target/circuits.json -o ./target/vk
+    fi
+
+    # Verify proof locally
+    echo "Verifying proof locally..."
+    bb verify -k ./target/vk -p ./target/proof_$i
 
     if [ $? -eq 0 ]; then
         echo "✅ Board $i: Proof generated and verified successfully!"
@@ -47,7 +61,7 @@ done
 
 echo ""
 echo "=========================================="
-echo "All proofs generated!"
+echo "All proofs generated and verified locally!"
 echo "=========================================="
 echo ""
 echo "Proof files:"

@@ -1,38 +1,48 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-interface IUltraVerifier {
-    function verify(bytes calldata _proof, bytes32[] calldata _publicInputs) external view returns (bool);
+interface IGroth16Verifier {
+    function verifyProof(
+        uint[2] calldata _pA,
+        uint[2][2] calldata _pB,
+        uint[2] calldata _pC,
+        uint[1] calldata _pubSignals
+    ) external view returns (bool);
 }
 
 contract SudokuVerifier {
-    IUltraVerifier public verifier;
+    IGroth16Verifier public verifier;
 
-    event ProofVerified(address indexed solver, bytes32 solutionHash, uint256 timestamp);
+    event ProofVerified(
+        address indexed solver,
+        uint256 commitment,
+        uint256 timestamp
+    );
     event VerificationFailed(address indexed solver, uint256 timestamp);
 
-    mapping(bytes32 => bool) public verifiedSolutions;
+    mapping(uint256 => bool) public verifiedSolutions;
     mapping(address => uint256) public solverCount;
 
     constructor(address _verifierAddress) {
-        verifier = IUltraVerifier(_verifierAddress);
+        verifier = IGroth16Verifier(_verifierAddress);
     }
 
     function verifySudokuProof(
-        bytes calldata proof,
-        bytes32[] calldata publicInputs
+        uint[2] calldata _pA,
+        uint[2][2] calldata _pB,
+        uint[2] calldata _pC,
+        uint[1] calldata _pubSignals // commitment
     ) external returns (bool) {
-        require(publicInputs.length > 0, "Public inputs required");
+        uint256 commitment = _pubSignals[0];
+        require(commitment != 0, "Commitment required");
+        require(!verifiedSolutions[commitment], "Solution already verified");
 
-        bytes32 solutionHash = publicInputs[0];
-        require(!verifiedSolutions[solutionHash], "Solution already verified");
-
-        bool isValid = verifier.verify(proof, publicInputs);
+        bool isValid = verifier.verifyProof(_pA, _pB, _pC, _pubSignals);
 
         if (isValid) {
-            verifiedSolutions[solutionHash] = true;
+            verifiedSolutions[commitment] = true;
             solverCount[msg.sender]++;
-            emit ProofVerified(msg.sender, solutionHash, block.timestamp);
+            emit ProofVerified(msg.sender, commitment, block.timestamp);
             return true;
         } else {
             emit VerificationFailed(msg.sender, block.timestamp);
@@ -40,7 +50,9 @@ contract SudokuVerifier {
         }
     }
 
-    function isSolutionVerified(bytes32 solutionHash) external view returns (bool) {
+    function isSolutionVerified(
+        uint256 solutionHash
+    ) external view returns (bool) {
         return verifiedSolutions[solutionHash];
     }
 

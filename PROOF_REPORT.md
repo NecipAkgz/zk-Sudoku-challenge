@@ -14,7 +14,7 @@ The circuit computes: `commitment = Σ(cell[i] * 257^i)` for all 625 cells.
 ### Board 1
 
 - **Commitment:** `0x2a68fb25b4ed529306d25794139138746c2cd802a8c13ed3d0605c91df193205`
-- **Status:** ✅ Proof verified (On-Chain)
+- **Status:** ✅ Proof verified (On-Chain - Dummy Verifier)
 - **Tx Hash:** `0x9c735dde0f3d9728d24cb4c4c7d5217307866bb8a2176e2edaa8de03dc58ebc8`
 - **File:** `boards/board_1.txt`
 
