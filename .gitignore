@@ -1,32 +1,36 @@
+# Dependencies
 node_modules/
 venv/
-.env
-*.log
-target/
-deployment.json
 
-# Noir
-circuits/target/
-circuits/Prover.toml
-circuits/Verifier.toml
-
-# Hardhat
-cache/
+# Build artifacts
 artifacts/
-typechain-types/
+cache/
+circom_circuits/node_modules/
+circom_circuits/sudoku_cpp/
+circom_circuits/sudoku_js/
+
+# Large files (powers of tau)
+circom_circuits/powersOfTau28_hez_final_16.ptau
+circom_circuits/sudoku_0000.zkey
+
+# Witness files (large)
+circom_circuits/witness_*.wtns
+
+# Environment
+.env
+.env.local
+
+# OS files
+.DS_Store
+*.swp
+*.log
+*.tmp
+
+# IDE
+.vscode/
+.idea/
 
 # Python
 __pycache__/
 *.pyc
 *.pyo
-*.pyd
-.Python
-*.so
-*.egg
-*.egg-info/
-dist/
-build/
-
-# OS
-.DS_Store
-Thumbs.db

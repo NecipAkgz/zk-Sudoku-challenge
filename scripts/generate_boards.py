@@ -150,17 +150,7 @@ def main():
         # Compute commitment again for safety
         commitment = compute_commitment_field(board)
 
-        # Create Prover.toml content
-        prover_content = f"solution = {json.dumps(flat_board)}\n"
-        prover_content += f'expected_commitment = "{commitment}"\n'
-
-        # Save to file
-        filename = f"circuits/Prover_{i+1}.toml"
-        with open(filename, "w") as f:
-            f.write(prover_content)
-        print(f"✓ Saved {filename}")
-
-        # Save Circom input.json (for the first board, or all)
+        # Save Circom input.json
         circom_input = {
             "solution": [int(x) for x in flat_board],
             "expectedCommitment": str(commitment)
