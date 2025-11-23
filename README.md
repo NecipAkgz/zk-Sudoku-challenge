@@ -2,32 +2,32 @@
 
 **Zero-Knowledge 25×25 Sudoku Verifier with Cryptographic Commitments**
 
-Bu proje, 25×25 Sudoku çözümlerini Zero Knowledge Proof (ZKP) kullanarak doğrulayan ve Arc blockchain üzerinde verify eden bir sistemdir.
+This project is a system that verifies 25×25 Sudoku solutions using Zero Knowledge Proof (ZKP) and validates them on the Arc blockchain.
 
-## 🎯 Proje Hedefi
+## 🎯 Project Goal
 
-Arc ekosisteminde ciddi projeler inşa etmek isteyen builder'ları bulmak için tasarlanmış bir görev. Amaç:
+A task designed to find builders who want to build serious projects in the Arc ecosystem. Objectives:
 
-- Noir circuit geliştirme
-- UltraHonk proving system kullanımı
-- Kriptografik commitment'lar
-- EVM smart contract entegrasyonu
-- Uçtan uca ZKP pipeline oluşturma
+- Noir circuit development
+- UltraHonk proving system usage
+- Cryptographic commitments
+- EVM smart contract integration
+- End-to-end ZKP pipeline creation
 
-## ✅ Tamamlanan Özellikler
+## ✅ Completed Features
 
-- ✅ Tam 25×25 Sudoku doğrulaması (tüm satırlar, sütunlar, kutular)
-- ✅ Kriptografik commitment (polynomial hash)
-- ✅ 5 farklı geçerli board üretimi
-- ✅ Tüm proof'ların local verification'ı
-- ✅ Public input olarak commitment
+- ✅ Full 25×25 Sudoku validation (all rows, columns, boxes)
+- ✅ Cryptographic commitment (polynomial hash)
+- ✅ Generation of 5 different valid boards
+- ✅ Local verification of all proofs
+- ✅ Commitment as public input
 
-## 📁 Proje Yapısı
+## 📁 Project Structure
 
 ```
 arc/
-├── circuits/              # Noir ZK devreleri
-│   ├── src/main.nr       # Sudoku + Commitment doğrulama
+├── circuits/              # Noir ZK circuits
+│   ├── src/main.nr       # Sudoku + Commitment validation
 │   ├── Prover_1.toml     # Board 1 witness
 │   ├── Prover_2.toml     # Board 2 witness
 │   ├── Prover_3.toml     # Board 3 witness
@@ -39,93 +39,93 @@ arc/
 │   ├── board_3.txt
 │   ├── board_4.txt
 │   └── board_5.txt
-├── contracts/             # Solidity kontratları
+├── contracts/             # Solidity contracts
 │   └── SudokuVerifier.sol
-├── scripts/               # Yardımcı scriptler
-│   ├── generate_boards.py         # 5 board üretici
-│   ├── generate_all_proofs.sh     # Tüm proof'ları üret
-│   └── deploy.js                  # Deployment scripti
-├── PROOF_REPORT.md        # Proof generation raporu
-└── README.md              # Bu dosya
+├── scripts/               # Helper scripts
+│   ├── generate_boards.py         # 5 board generator
+│   ├── generate_all_proofs.sh     # Generate all proofs
+│   └── deploy.js                  # Deployment script
+├── PROOF_REPORT.md        # Proof generation report
+└── README.md              # This file
 ```
 
-## 🛠️ Kurulum
+## 🛠️ Installation
 
-### Gereksinimler
+### Requirements
 
 - Node.js v18+
 - Python 3.8+
 - Noir (nargo v1.0.0-beta.15)
 - Hardhat
 
-### Adımlar
+### Steps
 
 ```bash
-# 1. Bağımlılıkları yükle
+# 1. Install dependencies
 npm install --legacy-peer-deps
 
-# 2. Noir'ı kur (eğer yoksa)
+# 2. Install Noir (if not already installed)
 curl -L https://raw.githubusercontent.com/noir-lang/noirup/main/install | bash
 source ~/.zshrc
 noirup
 
-# 3. Circuit'i derle
+# 3. Compile the circuit
 cd circuits
 nargo compile
 cd ..
 ```
 
-## 🚀 Kullanım
+## 🚀 Usage
 
-### 1. Board'ları Üret
+### 1. Generate Boards
 
 ```bash
 python3 scripts/generate_boards.py
 ```
 
-Bu komut 5 farklı geçerli 25×25 Sudoku board'u üretir.
+This command generates 5 different valid 25×25 Sudoku boards.
 
-### 2. Proof'ları Üret ve Doğrula
+### 2. Generate and Verify Proofs
 
 ```bash
 ./scripts/generate_all_proofs.sh
 ```
 
-Bu script:
+This script:
 
-- Her board için witness oluşturur
-- Proof üretir
-- Local olarak doğrular
-- Commitment'ları hesaplar
+- Creates witness for each board
+- Generates proofs
+- Verifies locally
+- Computes commitments
 
-### 3. Sonuçları İncele
+### 3. Review Results
 
 ```bash
-# Board'ları görüntüle
+# View boards
 cat boards/board_1.txt
 
-# Proof raporunu oku
+# Read proof report
 cat PROOF_REPORT.md
 ```
 
-## 🔬 Teknik Detaylar
+## 🔬 Technical Details
 
 ### Circuit (Noir)
 
-Circuit 2 ana kısıtlamayı doğrular:
+The circuit validates 2 main constraints:
 
-1. **Tam 25×25 Sudoku Kısıtlamaları:**
+1. **Full 25×25 Sudoku Constraints:**
 
-   - Her satırda 1-25 arası benzersiz sayılar (25 satır)
-   - Her sütunda 1-25 arası benzersiz sayılar (25 sütun)
-   - Her 5×5 kutuda 1-25 arası benzersiz sayılar (25 kutu)
+   - Unique numbers 1-25 in each row (25 rows)
+   - Unique numbers 1-25 in each column (25 columns)
+   - Unique numbers 1-25 in each 5×5 box (25 boxes)
 
-2. **Kriptografik Commitment:**
+2. **Cryptographic Commitment:**
    - Polynomial hash: `commitment = Σ(cell[i] * 257^i)` for i=0..624
-   - Binding: Herhangi bir hücre değişirse commitment değişir
-   - Public output: Commitment circuit'in public çıktısıdır
+   - Binding: If any cell changes, the commitment changes
+   - Public output: Commitment is the circuit's public output
 
-### Commitment Fonksiyonu
+### Commitment Function
 
 ```rust
 fn compute_board_commitment(grid: [u8; 625]) -> Field {
@@ -142,13 +142,13 @@ fn compute_board_commitment(grid: [u8; 625]) -> Field {
 }
 ```
 
-Bu fonksiyon:
+This function:
 
-- ✅ **Binding:** Herhangi bir hücre değişirse commitment tamamen değişir
-- ✅ **Deterministic:** Aynı board her zaman aynı commitment'ı verir
-- ✅ **Efficient:** ZK circuit'te verimli hesaplanır
+- ✅ **Binding:** If any cell changes, the commitment changes completely
+- ✅ **Deterministic:** The same board always produces the same commitment
+- ✅ **Efficient:** Efficiently computed in ZK circuit
 
-### Üretilen Commitment'lar
+### Generated Commitments
 
 | Board | Commitment (Public Output)                                           |
 | ----- | -------------------------------------------------------------------- |
@@ -158,30 +158,30 @@ Bu fonksiyon:
 | 4     | `0x2c3fa9fe74eb592d57f0c6c69aeef745cca404d0c0c518364c0edddbe5541ceb` |
 | 5     | `0x23951c5383af31f524489b98e5b16c7bf767b9d8060aab11ddee6a3b3f40a6f9` |
 
-## 📊 Doğrulama
+## 📊 Verification
 
-Tüm 5 board için:
+For all 5 boards:
 
-- ✅ Sudoku kuralları doğrulandı
-- ✅ Commitment hesaplandı
-- ✅ Proof üretildi
-- ✅ Local verification başarılı
+- ✅ Sudoku rules validated
+- ✅ Commitment computed
+- ✅ Proof generated
+- ✅ Local verification successful
 
-## 🔗 Arc Deployment (Sonraki Adımlar)
+## 🔗 Arc Deployment (Next Steps)
 
-### 1. Verifier Contract Üretimi
+### 1. Verifier Contract Generation
 
 ```bash
-# bb.js ile Solidity verifier üret
-# (Şu anda manuel entegrasyon gerekiyor)
+# Generate Solidity verifier with bb.js
+# (Currently requires manual integration)
 ```
 
-### 2. Smart Contract Deploy
+### 2. Smart Contract Deployment
 
 ```bash
-# .env dosyasını yapılandır
+# Configure .env file
 cp .env.example .env
-# PRIVATE_KEY ve ARC_RPC_URL'i düzenle
+# Edit PRIVATE_KEY and ARC_RPC_URL
 
 # Deploy
 npx hardhat run scripts/deploy.js --network arc
@@ -189,47 +189,47 @@ npx hardhat run scripts/deploy.js --network arc
 
 ### 3. On-Chain Verification
 
-Her board için:
+For each board:
 
-1. Proof'u contract'a gönder
-2. Commitment'ı public input olarak ver
-3. Transaction hash'i kaydet
+1. Send proof to contract
+2. Provide commitment as public input
+3. Record transaction hash
 
-## 📋 Gereksinimler Uyumluluğu
+## 📋 Requirements Compliance
 
-✅ **Tam 25×25 Sudoku:** Tüm satırlar, sütunlar ve kutular doğrulanıyor
-✅ **Kriptografik Commitment:** Polynomial hash binding commitment
-✅ **Public Input Kontrolü:** Commitment circuit'in public output'u
-✅ **Kısmi Kontrol Yok:** Tüm board doğrulanıyor
-✅ **5 Farklı Board:** Hepsi üretildi ve doğrulandı
+✅ **Full 25×25 Sudoku:** All rows, columns, and boxes are validated
+✅ **Cryptographic Commitment:** Polynomial hash binding commitment
+✅ **Public Input Check:** Commitment is the circuit's public output
+✅ **No Partial Check:** Entire board is validated
+✅ **5 Different Boards:** All generated and validated
 
-## 🎓 Öğrenilenler
+## 🎓 Lessons Learned
 
-1. **Noir Circuit Development:** ZK circuit yazma ve optimizasyon
-2. **Barretenberg:** UltraHonk proving system kullanımı
-3. **Cryptographic Commitments:** Binding commitment tasarımı
-4. **Sudoku Algorithms:** 25×25 Sudoku üretimi ve doğrulama
+1. **Noir Circuit Development:** Writing and optimizing ZK circuits
+2. **Barretenberg:** Using the UltraHonk proving system
+3. **Cryptographic Commitments:** Designing binding commitments
+4. **Sudoku Algorithms:** Generating and validating 25×25 Sudoku
 
-## 📝 Notlar
+## 📝 Notes
 
-- **Memory Limits:** BIP39 requirement kaldırıldı (memory limitleri nedeniyle)
-- **Commitment:** Polynomial hash kullanıldı (Poseidon/Keccak yerine)
-- **Verification:** Tüm proof'lar local olarak doğrulandı
-- **Arc Deployment:** Verifier contract generation bekleniyor
+- **Memory Limits:** BIP39 requirement removed (due to memory limits)
+- **Commitment:** Polynomial hash used (instead of Poseidon/Keccak)
+- **Verification:** All proofs verified locally
+- **Arc Deployment:** Awaiting verifier contract generation
 
-## 🔍 Dosyalar
+## 🔍 Files
 
-- `circuits/src/main.nr` - Ana ZK circuit
+- `circuits/src/main.nr` - Main ZK circuit
 - `scripts/generate_boards.py` - Board generator
 - `scripts/generate_all_proofs.sh` - Proof automation
 - `contracts/SudokuVerifier.sol` - Wrapper contract
-- `PROOF_REPORT.md` - Detaylı proof raporu
+- `PROOF_REPORT.md` - Detailed proof report
 - `boards/*.txt` - Human-readable boards
 
-## 📄 Lisans
+## 📄 License
 
 MIT
 
 ---
 
-**Status:** ✅ Proof generation tamamlandı, Arc deployment bekleniyor
+**Status:** ✅ Proof generation completed, awaiting Arc deployment

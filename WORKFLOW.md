@@ -1,132 +1,132 @@
 # zk-Sudoku Implementation Workflow
 
-## Mevcut Durum ✅
+## Current Status ✅
 
-1. **Noir Circuit** - Tamamlandı
+1. **Noir Circuit** - Completed
 
-   - Sudoku doğrulama implementasyonu
-   - BIP39 placeholder (SHA256 eksik)
-   - Derleme başarılı
+   - Sudoku validation implementation
+   - BIP39 placeholder (SHA256 missing)
+   - Compilation successful
 
-2. **Proof Generation** - Çalışıyor
+2. **Proof Generation** - Working
 
-   - Barretenberg entegrasyonu
-   - Witness oluşturma
-   - Proof üretimi ve doğrulama
+   - Barretenberg integration
+   - Witness creation
+   - Proof generation and verification
 
-3. **Smart Contracts** - Hazır
-   - SudokuVerifier.sol yazıldı
-   - Deployment scripti hazır
+3. **Smart Contracts** - Ready
+   - SudokuVerifier.sol written
+   - Deployment script ready
 
-## Kalan Görevler 🔄
+## Remaining Tasks 🔄
 
-### 1. SHA256 Implementasyonu
+### 1. SHA256 Implementation
 
-**Sorun:** Noir stdlib'de SHA256 path'i bulunamıyor
-**Çözüm Seçenekleri:**
+**Issue:** SHA256 path not found in Noir stdlib
+**Solution Options:**
 
-- [ ] Noir'ın güncel versiyonunu kontrol et
-- [ ] Manuel SHA256 implementasyonu ekle
-- [ ] Alternatif hash fonksiyonu kullan (Poseidon?)
+- [ ] Check Noir's latest version
+- [ ] Add manual SHA256 implementation
+- [ ] Use alternative hash function (Poseidon?)
 
-### 2. Verifier Contract Üretimi
+### 2. Verifier Contract Generation
 
-**Sorun:** bb.js contract komutu çalışmıyor
-**Çözüm Seçenekleri:**
+**Issue:** bb.js contract command not working
+**Solution Options:**
 
-- [ ] bb binary'yi direkt indir ve kullan
-- [ ] Noir'ın kendi codegen-verifier komutunu kullan
-- [ ] Manuel olarak verifier template'i adapte et
+- [ ] Download and use bb binary directly
+- [ ] Use Noir's own codegen-verifier command
+- [ ] Manually adapt verifier template
 
-### 3. BIP39 Uyumlu Board Üretimi
+### 3. BIP39 Compliant Board Generation
 
-**Sorun:** Backtracking çok yavaş, 12 dakikada çözüm bulamadı
-**Çözüm Seçenekleri:**
+**Issue:** Backtracking too slow, couldn't find solution in 12 minutes
+**Solution Options:**
 
-- [ ] Constraint solver kullan (z3-solver)
-- [ ] Heuristic yaklaşım geliştir
-- [ ] Basitleştirilmiş versiyon: Sadece satırlar BIP39 uyumlu
-- [ ] Pre-computed çözümler kullan
+- [ ] Use constraint solver (z3-solver)
+- [ ] Develop heuristic approach
+- [ ] Simplified version: Only rows BIP39 compliant
+- [ ] Use pre-computed solutions
 
 ### 4. Arc Deployment
 
-**Gereksinimler:**
+**Requirements:**
 
-- [ ] Arc testnet RPC URL bul
-- [ ] Test ETH/token al
-- [ ] .env dosyasını yapılandır
-- [ ] Deploy scriptini çalıştır
+- [ ] Find Arc testnet RPC URL
+- [ ] Get test ETH/tokens
+- [ ] Configure .env file
+- [ ] Run deploy script
 
-### 5. Test Vektörleri
+### 5. Test Vectors
 
-**Hedef:** 5 farklı geçerli board
+**Goal:** 5 different valid boards
 
-- [ ] Board 1: Üret, kanıtla, doğrula
-- [ ] Board 2: Üret, kanıtla, doğrula
-- [ ] Board 3: Üret, kanıtla, doğrula
-- [ ] Board 4: Üret, kanıtla, doğrula
-- [ ] Board 5: Üret, kanıtla, doğrula
+- [ ] Board 1: Generate, prove, verify
+- [ ] Board 2: Generate, prove, verify
+- [ ] Board 3: Generate, prove, verify
+- [ ] Board 4: Generate, prove, verify
+- [ ] Board 5: Generate, prove, verify
 
-## Öncelikli Adımlar (Sırayla)
+## Priority Steps (In Order)
 
-### Adım 1: Basitleştirilmiş Versiyon Test Et
+### Step 1: Test Simplified Version
 
 ```bash
-# Şu anki durumu test et (BIP39 olmadan)
+# Test current state (without BIP39)
 cd circuits
 nargo execute witness
 ../node_modules/.bin/bb.js prove -b ./target/circuits.json -w ./target/witness.gz -o ./target/proof
 ../node_modules/.bin/bb.js verify -k ./target/vk -p ./target/proof
 ```
 
-### Adım 2: Verifier Contract Üret
+### Step 2: Generate Verifier Contract
 
 ```bash
-# Alternatif yöntemler dene
-# Yöntem 1: bb binary
-# Yöntem 2: Manuel template
+# Try alternative methods
+# Method 1: bb binary
+# Method 2: Manual template
 ```
 
-### Adım 3: Local Test Deploy
+### Step 3: Local Test Deploy
 
 ```bash
-# Hardhat local network'te test et
+# Test on Hardhat local network
 npx hardhat node
 npx hardhat run scripts/deploy.js --network localhost
 ```
 
-### Adım 4: Arc Deployment
+### Step 4: Arc Deployment
 
 ```bash
-# Arc testnet bilgilerini ekle
-# Deploy et
+# Add Arc testnet information
+# Deploy
 npx hardhat run scripts/deploy.js --network arc
 ```
 
-## Alternatif Yaklaşım: MVP
+## Alternative Approach: MVP
 
-Eğer BIP39 kısmı çok zor olursa:
+If BIP39 part is too difficult:
 
-1. **Sadece Sudoku Doğrulama:**
+1. **Sudoku Validation Only:**
 
-   - BIP39 kısıtlamasını kaldır
-   - Sadece 25x25 Sudoku doğrula
-   - Proof üret ve on-chain verify et
+   - Remove BIP39 constraint
+   - Validate only 25x25 Sudoku
+   - Generate proof and verify on-chain
 
-2. **Basitleştirilmiş BIP39:**
+2. **Simplified BIP39:**
 
-   - Sadece satırlar BIP39 uyumlu (sütunlar değil)
-   - Veya sadece ilk N satır
+   - Only rows BIP39 compliant (not columns)
+   - Or only first N rows
 
-3. **Pre-computed Çözümler:**
-   - Offline olarak geçerli boardlar üret
-   - Bunları hardcode et
-   - Proof generation'a odaklan
+3. **Pre-computed Solutions:**
+   - Generate valid boards offline
+   - Hardcode them
+   - Focus on proof generation
 
-## Notlar
+## Notes
 
-- Circuit çalışıyor ✅
-- Proof generation çalışıyor ✅
-- Ana zorluk: BIP39 uyumlu board üretimi
-- Verifier contract generation sorunu var
-- Arc deployment bilgileri eksik
+- Circuit working ✅
+- Proof generation working ✅
+- Main challenge: BIP39 compliant board generation
+- Verifier contract generation issue exists
+- Arc deployment information missing
