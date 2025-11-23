@@ -1,0 +1,32 @@
+node_modules/
+venv/
+.env
+*.log
+target/
+deployment.json
+
+# Noir
+circuits/target/
+circuits/Prover.toml
+circuits/Verifier.toml
+
+# Hardhat
+cache/
+artifacts/
+typechain-types/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db

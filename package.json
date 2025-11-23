@@ -1,0 +1,21 @@
+{
+  "name": "arc",
+  "version": "1.0.0",
+  "description": "Build a system to verify a 25x25 Sudoku solution where every row and column encodes a valid BIP39 word list, using Zero Knowledge Proofs (Noir) and verifying on the Arc blockchain (EVM).",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "dotenv": "^17.2.3",
+    "hardhat": "^3.0.15"
+  },
+  "dependencies": {
+    "@aztec/bb.js": "^2.1.7",
+    "source-map-support": "^0.5.21"
+  }
+}
