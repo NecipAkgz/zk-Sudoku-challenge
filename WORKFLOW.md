@@ -186,13 +186,6 @@ arc/
 - ✅ Local verification successful
 - ✅ On-chain verification successful
 
-## Next Steps (Optional)
-
-1. Verify remaining 4 boards on-chain
-2. Build frontend for proof submission
-3. Add batch verification
-4. Implement proof caching
-
 ---
 
 **Status:** ✅ Production-ready and deployed on Arc Testnet
