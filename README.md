@@ -232,4 +232,4 @@ MIT
 
 ---
 
-**Status:** ✅ Proof generation completed, awaiting Arc deployment
+**Status:** ✅ Deployed to Arc Testnet & Verified

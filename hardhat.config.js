@@ -1,11 +1,12 @@
 require("@nomicfoundation/hardhat-toolbox");
+require("dotenv").config();
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
   solidity: "0.8.28",
   networks: {
     arc: {
-      url: "https://rpc.testnet.arc.network",
+      url: process.env.ARC_RPC_URL || "https://rpc.testnet.arc.network",
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
     },
   },
