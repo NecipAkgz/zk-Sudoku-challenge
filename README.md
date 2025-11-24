@@ -22,6 +22,26 @@ Build a production-ready ZK Sudoku verifier demonstrating:
 - ✅ Local proof verification
 - ✅ **On-chain verification successful on Arc Testnet**
 
+## 📚 Documentation
+
+- **[Technical Deep-Dive](TECHNICAL_DEEPDIVE.md)** - Comprehensive technical documentation
+
+  - Migration journey (Noir → Circom)
+  - Circuit architecture
+  - Cryptographic commitment design
+  - Performance metrics
+
+- **[Lessons Learned](LESSONS_LEARNED.md)** - Practical guide for developers
+
+  - Tooling selection
+  - Debugging strategies
+  - When to pivot
+  - Production readiness checklist
+
+- **[Proof Report](PROOF_REPORT.md)** - Detailed proof generation results
+- **[Workflow](WORKFLOW.md)** - Implementation workflow and commands
+- **[Submission](SUBMISSION.md)** - Challenge submission document
+
 ## 📁 Project Structure
 
 ```
