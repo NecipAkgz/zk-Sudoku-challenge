@@ -222,10 +222,6 @@ Migrated to Circom + Groth16:
 - `contracts/Groth16Verifier.sol` - Generated verifier
 - `contracts/SudokuVerifier.sol` - Wrapper contract
 
-## 📄 License
-
-MIT
-
 ---
 
 **Status:** ✅ Successfully Deployed & Verified on Arc Testnet
