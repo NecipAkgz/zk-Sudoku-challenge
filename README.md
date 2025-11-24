@@ -1,8 +1,30 @@
 # zk-Sudoku on Arc
 
+![Status](https://img.shields.io/badge/status-production-green)
+![Constraints](https://img.shields.io/badge/constraints-52500-blue)
+![Proof Size](https://img.shields.io/badge/proof-200%20bytes-orange)
+![Gas](https://img.shields.io/badge/gas-250K-red)
+![Circom](https://img.shields.io/badge/circom-2.1.6-purple)
+
 **Zero-Knowledge 25×25 Sudoku Verifier with Cryptographic Commitments**
 
 This project verifies 25×25 Sudoku solutions using Zero Knowledge Proofs (ZKP) and validates them on the Arc blockchain.
+
+## 🏗️ Architecture
+
+```mermaid
+graph LR
+    A[25×25 Board] --> B[Circom Circuit<br/>52,500 constraints]
+    B --> C[Groth16 Proof<br/>~200 bytes]
+    C --> D[Solidity Verifier<br/>Arc Testnet]
+    D --> E[✅ Verified<br/>~250K gas]
+
+    style A fill:#e1f5ff
+    style B fill:#fff4e1
+    style C fill:#ffe1f5
+    style D fill:#e1ffe1
+    style E fill:#90EE90
+```
 
 ## 🎯 Project Goal
 
